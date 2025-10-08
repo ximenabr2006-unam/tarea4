@@ -1,0 +1,108 @@
+---
+title: "Distribución Hipergeométrica"
+lang: es
+---
+
+```{=html}
+<style>
+main.content {
+text-align: justify}
+</style>
+```
+---
+title: "Distribución Hipergeométrica"
+output: html_document
+---
+
+# Distribución Hipergeométrica
+
+La **distribución hipergeométrica** modela el número de éxitos en una muestra de tamaño $n$ extraída sin reemplazo de una población finita de tamaño $N$ que contiene exactamente $K$ éxitos. Es fundamental para analizar muestreos sin reemplazo en poblaciones finitas.
+
+## Definición 1
+Una variable aleatoria $X$ sigue una distribución hipergeométrica si representa el número de éxitos al seleccionar $n$ elementos sin reemplazo de una población de $N$ elementos, de los cuales $K$ se consideran éxitos. Su función de masa de probabilidad (pmf) está dada por:
+
+$$
+f(x) = \frac{\binom{K}{x} \binom{N - K}{n - x}}{\binom{N}{n}} \quad \text{para } x = \max(0, n - (N - K)), \ldots, \min(n, K)
+$$
+
+Una variable aleatoria $X$ que tiene distribución hipergeométrica será denotada como $X \sim \text{hyper}(N, K, n)$.
+
+---
+
+# Características de la Distribución Hipergeométrica
+
+## Parámetros
+
+- $N$: tamaño de la población
+- $K$: número total de éxitos en la población  
+- $n$: tamaño de la muestra extraída
+
+## Función de Distribución
+
+$$
+F(x) = \sum_{u \leq x} f(u) = \sum_{u \leq x} \frac{\binom{K}{u} \binom{N - K}{n - u}}{\binom{N}{n}}
+$$
+
+## Parámetros Estadísticos
+
+**Esperanza (Media):**
+
+$$
+E(X) = n \cdot \frac{K}{N}
+$$
+
+**Varianza:**
+
+$$
+\text{Var}(X) = n \cdot \frac{K}{N} \cdot \frac{N - K}{N} \cdot \frac{N - n}{N - 1}
+$$
+
+```{r}
+# EJEMPLOS PRÁCTICOS
+# Ejemplo 1: Cálculo básico
+N <- 20
+K <- 7
+n <- 5
+
+cat("**Ejemplo 1:** Urna con bolas\n")
+cat("Parámetros: N =", N, ", K =", K, ", n =", n, "\n\n")
+
+# Probabilidad de obtener exactamente 2 éxitos
+prob <- dhyper(x = 2, m = K, n = N - K, k = n)
+cat("P(X = 2) =", round(prob, 4), "\n")
+
+# Media teórica
+media_teorica <- n * (K / N)
+cat("Media teórica E(X) =", round(media_teorica, 4), "\n")
+
+# Varianza teórica
+varianza_teorica <- n * (K/N) * ((N-K)/N) * ((N-n)/(N-1))
+cat("Varianza teórica Var(X) =", round(varianza_teorica, 4), "\n")
+```
+
+```{r}
+# Ejemplo 2: Distribución completa
+cat("\n**Ejemplo 2:** Función de masa de probabilidad completa\n")
+valores_posibles <- max(0, n - (N - K)):min(n, K)
+probabilidades <- dhyper(x = valores_posibles, m = K, n = N - K, k = n)
+
+distribucion <- data.frame(
+  x = valores_posibles,
+  P_X = round(probabilidades, 4)
+)
+print(distribucion)
+```
+
+```{r}
+# Visualización
+library(ggplot2)
+ggplot(distribucion, aes(x = factor(x), y = P_X)) +
+  geom_col(fill = "steelblue", alpha = 0.7) +
+  labs(
+    title = "Distribución Hipergeométrica",
+    subtitle = paste("N =", N, ", K =", K, ", n =", n),
+    x = "Número de éxitos (x)",
+    y = "Probabilidad P(X = x)"
+  ) +
+  theme_minimal()
+```
